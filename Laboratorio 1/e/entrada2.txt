@@ -1,0 +1,375 @@
+//Autor: Carlos Retamales
+//Ramo: Procesamiento de lenguajes formales (PLF)
+//Profesora: Consuelo Ramírez
+
+//LIBRERIAS
+#include <stdio.h>
+#include <string.h>
+#include <locale.h>
+#include <windows.h>
+#include <sys/stat.h>
+
+
+// FUNCIONES
+void iniAnalizadorLexico(char const *entradas[]);
+void readLexemas(FILE *arch_entrada,FILE * arch_salida,const char * arch_name);
+int checkInputs(int cantidad_entradas, char const *entradas[]);
+void isComponenteLexico(FILE * arch_salida,char * linea_arch);
+void writeComponent(FILE * arch_salida,int tipo);
+
+// DESARROLLO DE FUNCIONES
+
+//- checkInputs
+// Entrada: entero (cantidad de entradas), lista de constante char (entradas) 
+// Descripcion: dado los inputs por consola analiza si estas son validas para hacer el analizador lexico
+// Salida: un entero que representa un booleano 0 si es no es valido y 1 si es valido hacer el analizador lexico
+
+int checkInputs(int cantidad_entradas, char const *entradas[])
+{   
+    //Si la son más parametros 
+    if (cantidad_entradas>3)
+    {
+        printf("Error: Demasiados par%cmetros.\nUso: lexico.exe archivo_entrada archivo_salida\n",-31);
+        return 0;
+    }
+    else if (cantidad_entradas<3) //Si no ingresa todos
+    {
+        if(cantidad_entradas == 2) //Si le falta 1
+        {
+            printf("Error: Falta par%cmetro.\nUso: lexico.exe archivo_entrada archivo_salida\n",-31);
+            return 0;
+        }
+        else //Si le falta más de 1
+        {
+            printf("Error: Faltan par%cmetros.\nUso: lexico.exe archivo_entrada archivo_salida\n",-31);
+            return 0;
+        }
+    }
+    else //Si la cantidad entradas esta ok
+    {
+        FILE *aux;
+        aux = fopen(entradas[1],"r");
+        //Si el archivo de entrada existe en el directorio
+        if(aux == NULL)
+        {
+            printf("Error:El archivo de entrada no existe.\n");
+            return 0;
+        }
+        aux = fopen(entradas[2],"r");
+        if(aux !=NULL)
+        {
+            printf("Error:El archivo de salida ya existe.\n");
+            return 0; 
+        }
+        return 1;
+    }
+    return 0;
+} 
+
+//- iniAnalizadorLexico
+// Entrada:  lista constantes char (entradas)
+// Descripcion: inicializa el analizador lexico
+// Salida: ninguna, pero escribe un archivo de salida
+
+void iniAnalizadorLexico(char const *entradas[])
+{
+    //Inicializa los archivos de entrada y salida 
+    FILE *arch_entrada;
+    FILE *arch_salida;
+    arch_entrada = fopen(entradas[1],"r");
+    arch_salida = fopen(entradas[2],"w");
+    //Recorre el archivo para escribir 
+    readLexemas(arch_entrada,arch_salida,entradas[1]);
+    return;
+}
+
+//- readLexemas
+// Entrada: un archivo de entrada, un archivo de salida, el nombre del archivo de entrada
+// Descripcion: Toma linea a linea del archivo de entrada y hace el analizador lexico
+// Salida:ninguna 
+
+void readLexemas(FILE *arch_entrada,FILE *arch_salida,const char *arch_name)
+{
+    struct stat tam;
+    stat(arch_name, &tam);
+    char *linea_arch = malloc(tam.st_size);
+    
+    //Lee linea por linea para ver los lexemas generados
+    while(fscanf(arch_entrada,"%[^\n] ",linea_arch) != EOF)
+    {
+        isComponenteLexico(arch_salida,linea_arch);
+    }
+    //Se cierran los archivos
+    fclose(arch_entrada);
+    fclose(arch_salida);
+}
+
+//- isComponent
+// Entrada: Un caracter
+// Descripcion: toma el caracter y evalua cual tipo de componente lexico corresponde
+// Salida: un entero que representa un id de tipo de componente lexico
+
+int isComponent(char caracter)
+{
+    char actual[2] = {caracter,'\0'};
+    //TERMINALES
+    //Entero
+    if(strcmp("0",actual)==0 || strcmp("1",actual)==0 || strcmp("2",actual)==0 || strcmp("3",actual)==0 || strcmp("4",actual)==0 || strcmp("5",actual)==0 || strcmp("6",actual)==0 || strcmp("7",actual)==0 || strcmp("8",actual)==0 || strcmp("9",actual)==0)
+    {
+        return 1;
+    }
+    else if(strcmp(".",actual)==0)//posible real
+    {
+        return 2;
+    }
+    else if(strcmp("+",actual)==0) //suma
+    {
+        return 3;
+    }
+    else if(strcmp("-",actual)==0)//resta
+    {
+        return 4;
+    }
+    else if(strcmp("/",actual)==0)//division
+    {
+        return 5;
+    }
+    else if(strcmp("*",actual)==0)//multiplicacion
+    {
+        return 6;
+    }
+    else if(strcmp("(",actual)==0)//parentesis
+    {
+        return 71;
+    }
+    else if(strcmp(")",actual)==0)//parentesis
+    {
+        return 72;
+    }
+    else if(strcmp("^",actual)==0)//potencia
+    {
+        return 8;
+    }
+    else if(strcmp("m",actual)==0 || strcmp("o",actual)==0 || strcmp("d",actual)==0 || strcmp("i",actual)==0 || strcmp("n",actual)==0 || strcmp("t",actual)==0)
+    {
+        return 9;//puede ser mod o int
+    }
+    else 
+    {
+        return 0;//ninguno de los lexemas aceptados, es decir, terminales
+    }
+    return 0;
+}
+
+//- writeComponent
+// Entrada: archivo de salida y el tipo de componente lexico que es 
+// Descripcion: Escribe en un archivo de salida con formato, el tipo de componente que es 
+// Salida: ninguna, pero escribe en el archivo de salida 
+
+void writeComponent(FILE * arch_salida,int tipo)
+{
+    if(tipo == 1)
+    {
+        fprintf(arch_salida,"%s\n","ENTERO");
+    }
+    else if(tipo == 2)
+    {
+        fprintf(arch_salida,"%s\n","REAL");
+    }
+    else if(tipo == 3)
+    {
+        fprintf(arch_salida,"%s\n","+");
+    }
+    else if(tipo == 4)
+    {
+        fprintf(arch_salida,"%s\n","-");
+    }
+    else if(tipo == 5)
+    {
+        fprintf(arch_salida,"%s\n","/");
+    }
+    else if(tipo == 6)
+    {
+        fprintf(arch_salida,"%s\n","*");
+    }
+    else if(tipo == 71)
+    {
+        fprintf(arch_salida,"%s\n","(");
+    }
+    else if(tipo == 72)
+    {
+        fprintf(arch_salida,"%s\n",")");
+    }
+    else if(tipo == 8)
+    {
+        fprintf(arch_salida,"%s\n","^");
+    }
+    else if(tipo == 9)
+    {
+        fprintf(arch_salida,"%s\n","MOD");
+    }
+    else if(tipo == 10)
+    {
+        fprintf(arch_salida,"%s\n","INT");
+    }
+    else
+    {
+        return;
+    }
+    return;
+}
+
+//- isComponenteLexico
+// Entrada: el archivo de salida, y una de las lineas del archivo de entrada 
+// Descripcion: Recorre la linea, analizando si hay lexemas que correspondan a un componente lexico
+// Salida: ninguna
+
+void isComponenteLexico(FILE * arch_salida,char * linea_arch)
+{
+    
+    int cantidad_caracteres = strlen(linea_arch);
+    int allLine = 0, i = 0,tipo,tipo_aux,paso=0;
+
+    //Si aun no reviso toda la linea hace algo 
+    while(!allLine)
+    {
+        //si no excedo la cantidad de caracteres que tiene la linea
+        if(i < cantidad_caracteres)
+        {
+            tipo = isComponent(linea_arch[i]);
+            //printf("> %c | ",linea_arch[i]);
+            //ver el siguiente para ver si hay un componente de mayor tamano
+            if(i+1 < cantidad_caracteres)
+            {
+                tipo_aux = isComponent(linea_arch[i+1]);
+                //puede ser un real o un entero
+                if(tipo == 1 && tipo_aux == 2)
+                {
+                    int cantidad = 0;
+                    i = i + 2;
+                    //Analizo hasta llegar un componente distinto de entero
+                    while(tipo == 1 && i<cantidad_caracteres)
+                    {
+                        
+                        tipo = isComponent(linea_arch[i]);
+                        if(tipo == 1)
+                        {
+                            cantidad++;
+                        }
+                        i++;
+                    }
+                    if(cantidad>0) //si hay al menos 1 o mas sera un real 
+                    {
+                        writeComponent(arch_salida,2);
+                        paso = 1;
+                    }
+                    else //sino sera un entero
+                    {
+                        writeComponent(arch_salida,1);
+                        paso = 1;
+                    }
+                    i=i-2;
+                }
+                if(tipo == 1 && tipo_aux == 1)//un entero más largo
+                {
+                    i = i + 2;
+                    //Se analiza la parte del entero hasta llegar un componente distinto
+                    while(tipo == 1 && i<cantidad_caracteres)
+                    {
+                        tipo = isComponent(linea_arch[i]);
+                        i++;
+                    }
+                    if(tipo == 2) //puede ser un real largo
+                    {
+                        //printf("aca = %c\n",linea_arch[i]);
+                        int cantidad = 0;
+                        tipo = isComponent(linea_arch[i]);
+                        while(tipo == 1 && i<cantidad_caracteres)
+                        {
+                            //printf("Aca = %c\n",linea_arch[i]);
+                            tipo = isComponent(linea_arch[i]);
+                            if(tipo == 1)
+                            {
+                                cantidad++;
+                            }
+                            i++;
+                        }
+                        if(cantidad>0) //es un real
+                        {
+                            writeComponent(arch_salida,2);
+                            paso = 1;
+                        }
+                        else // es un entero 
+                        {
+                            writeComponent(arch_salida,1);
+                            paso = 1;
+                        }
+                        //i--;
+                        i = i - 2;
+                    }
+                    else
+                    {
+                        //printf("ANOTA UN 1\n");
+                        writeComponent(arch_salida,1);
+                        paso = 1;
+                        i--;
+                    }
+                }
+                if (tipo == 9 && tipo_aux == 9 && i+2<cantidad_caracteres)//puede ser mod o int
+                {
+                    
+                    if(isComponent(linea_arch[i+2])==9)
+                    {
+                        char aux[4] = {linea_arch[i],linea_arch[i+1],linea_arch[i+2],'\0'};
+                        if(strcmp(aux,"mod")==0)
+                        {
+                            writeComponent(arch_salida,9);
+                            paso = 1;
+                        }
+                        if(strcmp(aux,"int")==0)
+                        {
+                            writeComponent(arch_salida,10);
+                            paso = 1;
+                        }
+                        if(paso == 1)
+                        {
+                            i = i+2;
+                        }
+                    }
+                }       
+            }
+            if(tipo>0 && paso == 0 && tipo != 2 && tipo != 9)//un solo caracter 
+            {
+                //printf("ANOTA UN TIPO %d\n",tipo);
+                writeComponent(arch_salida,tipo);
+            }
+            i++;
+            //printf("IMPRIME: %c ||| ",linea_arch[i]);
+            paso = 0;
+        }
+        else // ya recorri toda la linea 
+        {
+            allLine = 1;
+        }
+    }
+}
+
+//MAIN PRINCIPAL
+int main(int argc, char const *argv[])
+{     
+    // Establecer el idioma a español
+    setlocale(LC_ALL, "spanish"); // Cambiar locale - Suficiente para máquinas Linux
+    SetConsoleCP(1252); // Cambiar STDIN -  Para máquinas Windows
+    SetConsoleOutputCP(1252); // Cambiar STDOUT - Para máquinas Windows
+    
+    // Chequea que las entradas esten bien, en caso 
+    // de una entrada mal ingresada sino envia uno
+    // de los errores solicitados
+    
+    if(checkInputs(argc,argv))
+    {
+        iniAnalizadorLexico(argv);
+    }
+
+    return 0;
+}
