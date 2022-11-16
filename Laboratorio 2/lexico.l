@@ -6,62 +6,67 @@
 %option noyywrap
 
 %%
-'procedure' { fprintf(yyout, "PROCEDURE\n"); }
-'function' { fprintf(yyout, "FUNCTION\n"); }
-'program' { fprintf(yyout, "PROGRAM\n"); }
-'integer' { fprintf(yyout, "INTEGER\n"); }
-'boolean' { fprintf(yyout, "BOOLEAN\n"); }
-'forward' { fprintf(yyout, "FORWARD\n"); }
-'repeat' { fprintf(yyout, "REPEAT\n"); }
-'downto' { fprintf(yyout, "DOWNTO\n"); }
-'until' { fprintf(yyout, "UNTIL\n"); }
-'while' { fprintf(yyout, "WHILE\n"); }
-'const' { fprintf(yyout, "CONST\n"); }
-'begin' { fprintf(yyout, "BEGIN\n"); }
-'type' { fprintf(yyout, "TYPE\n"); }
-'real' { fprintf(yyout, "REAL\n"); }
-'char' { fprintf(yyout, "CHAR\n"); }
-'then' { fprintf(yyout, "THEN\n"); }
-'else' { fprintf(yyout, "ELSE\n"); }
-'case' { fprintf(yyout, "CASE\n"); }
-'div' { fprintf(yyout, "DIV\n"); }
-'mod' { fprintf(yyout, "MOD\n"); }
-'and' { fprintf(yyout, "AND\n"); }
-'not' { fprintf(yyout, "NOT\n"); }
-'for' { fprintf(yyout, "FOR\n"); }
-'var' { fprintf(yyout, "VAR\n"); }
-'end' { fprintf(yyout, "END\n"); }
-'if' { fprintf(yyout, "IF\n"); }
-'of' { fprintf(yyout, "OF\n"); }
-'do' { fprintf(yyout, "DO\n"); }
-'to' { fprintf(yyout, "TO\n"); }
-'or' { fprintf(yyout, "OR\n"); }
-'..' { fprintf(yyout, "RANGO\n"); }
-':=' { fprintf(yyout, "ASIGNACION\n"); }
-'<=' { fprintf(yyout, "MENOR IGUAL\n"); }
-'<>' { fprintf(yyout, "DISTINTO\n"); }
-'>=' { fprintf(yyout, "MAYOR IGUAL\n"); }
-';' { fprintf(yyout, ";\n"); }
-'.' { fprintf(yyout, ".\n"); }
-'=' { fprintf(yyout, "=\n"); }
-':' { fprintf(yyout, ":\n"); }
-',' { fprintf(yyout, ",\n"); }
-'+' { fprintf(yyout, "+\n"); }
-'-' { fprintf(yyout, "-\n"); }
-'`' { fprintf(yyout, "`\n"); }
-'(' { fprintf(yyout, "(\n"); }
-')' { fprintf(yyout, ")\n"); }
-'<' { fprintf(yyout, "<\n"); }
-'>' { fprintf(yyout, ">\n"); }
-'*' { fprintf(yyout, "*\n"); }
-'/' { fprintf(yyout, "/\n"); }
+"procedure" {fprintf(yyout, "PROCEDURE\n"); }
+"function" {fprintf(yyout, "FUNCTION\n"); }
+"program" {fprintf(yyout, "PROGRAM\n"); }
+"integer" {fprintf(yyout, "INTEGER\n"); }
+"boolean" {fprintf(yyout, "BOOLEAN\n"); }
+"forward" {fprintf(yyout, "FORWARD\n"); }
+"repeat" {fprintf(yyout, "REPEAT\n"); }
+"downto" {fprintf(yyout, "DOWNTO\n"); }
+"until" {fprintf(yyout, "UNTIL\n"); }
+"while" {fprintf(yyout, "WHILE\n"); }
+"const" {fprintf(yyout, "CONST\n"); }
+"begin" {fprintf(yyout, "BEGIN\n"); }
+"type" {fprintf(yyout, "TYPE\n"); }
+"real" {fprintf(yyout, "REAL\n"); }
+"char" {fprintf(yyout, "CHAR\n"); }
+"then" {fprintf(yyout, "THEN\n"); }
+"else" {fprintf(yyout, "ELSE\n"); }
+"case" {fprintf(yyout, "CASE\n"); }
+"div" {fprintf(yyout, "DIV\n"); }
+"mod" {fprintf(yyout, "MOD\n"); }
+"and" {fprintf(yyout, "AND\n"); }
+"not" {fprintf(yyout, "NOT\n"); }
+"for" {fprintf(yyout, "FOR\n"); }
+"var" {fprintf(yyout, "VAR\n"); }
+"end" {fprintf(yyout, "END\n"); }
+"if" {fprintf(yyout, "IF\n"); }
+"of" {fprintf(yyout, "OF\n"); }
+"do" {fprintf(yyout, "DO\n"); }
+"to" {fprintf(yyout, "TO\n"); }
+"or" {fprintf(yyout, "OR\n"); }
+".." {fprintf(yyout, "RANGO\n"); }
+":=" {fprintf(yyout, "ASIGNACION\n"); }
+"<=" {fprintf(yyout, "MENOR IGUAL\n"); }
+"<>" {fprintf(yyout, "DISTINTO\n"); }
+">=" {fprintf(yyout, "MAYOR IGUAL\n"); }
+";" {fprintf(yyout, ";\n"); }
+"." {fprintf(yyout, ".\n"); }
+"=" {fprintf(yyout, "=\n"); }
+":" {fprintf(yyout, ":\n"); }
+"," {fprintf(yyout, ",\n"); }
+"+" {fprintf(yyout, "+\n"); }
+"-" {fprintf(yyout, "-\n"); }
+"'" {fprintf(yyout, "'\n"); }
+"(" {fprintf(yyout, "(\n"); }
+")" {fprintf(yyout, ")\n"); }
+"<" {fprintf(yyout, "<\n"); }
+">" {fprintf(yyout, ">\n"); }
+"*" {fprintf(yyout, "*\n"); }
+"/" {fprintf(yyout, "/\n"); }
 [0-9]+E[0-9]+ { fprintf(yyout, "EXPONENCIAL\n"); }
-[0-9]+E
-[0-9]+'.'[0-9]+ { fprintf(yyout, "DECIMAL"); }
-[0-9]+ { fprintf(yyout, "ENTERO\n"); }
-[_a-zA-Z][_a-zA-Z0-9]* { fprintf(yyout, "IDENTIFICADOR\n"); }
+[0-9]+E"+"[0-9]+ {fprintf(yyout, "EXPONENCIAL\n");}
+[0-9]+E"-"[0-9]+ {fprintf(yyout, "EXPONENCIAL\n");}
+[0-9]+"."[0-9]+E[0-9]+ {fprintf(yyout, "EXPONENCIAL\n");}
+[0-9]+"."[0-9]+E"+"[0-9]+ {fprintf(yyout, "EXPONENCIAL\n");}
+[0-9]+"."[0-9]+E"-"[0-9]+ {fprintf(yyout, "EXPONENCIAL\n");}
+[0-9]+"."[0-9]+ { fprintf(yyout, "DECIMAL\n"); }
+[0-9]+ {fprintf(yyout, "ENTERO\n"); }
+[_a-zA-Z][_a-zA-Z0-9]* {fprintf(yyout, "IDENTIFICADOR\n"); }
+. {}
 [\r\n]* {}
-<<EOF>> { exit(0); }
+<<EOF>> { return 1;}
 %%
 
 void main(int argc, char *argv[]) {
